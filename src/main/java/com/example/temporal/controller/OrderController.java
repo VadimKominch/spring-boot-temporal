@@ -28,4 +28,15 @@ public class OrderController {
 
         return "Started workflow for order " + id;
     }
+
+    @PostMapping("correlate/{id}")
+    public String correlate(@PathVariable String id) {
+        OrderWorkflow workflow = client.newWorkflowStub(
+                OrderWorkflow.class,
+                "order-" + id // 🔑 correlation
+        );
+
+        workflow.paymentProcessed();
+        return "Correlated workflow for order " + id;
+    }
 }

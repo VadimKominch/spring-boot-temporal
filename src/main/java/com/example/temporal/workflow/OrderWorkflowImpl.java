@@ -8,6 +8,8 @@ import java.time.Duration;
 
 public class OrderWorkflowImpl implements OrderWorkflow {
 
+    private boolean paymentConfirmed = false;
+
     private final PaymentActivity paymentActivity =
             Workflow.newActivityStub(
                     PaymentActivity.class,
@@ -24,6 +26,13 @@ public class OrderWorkflowImpl implements OrderWorkflow {
         // Durable timer (does NOT block a thread)
         Workflow.sleep(Duration.ofSeconds(30));
 
+        Workflow.await(() -> paymentConfirmed);
+
         paymentActivity.confirm(orderId);
+    }
+
+    @Override
+    public void paymentProcessed() {
+        paymentConfirmed = true;
     }
 }
